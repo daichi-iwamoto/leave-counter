@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h1 @click="submit()" class="title">
-      さとにゃん おさんぽ かんし つ～る
+      さとにゃん かんし つ～る
     </h1>
     <div class="logo-box">
       <logo />
@@ -65,6 +65,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
+
 .container {
   margin: 0 auto;
   min-height: 100vh;
@@ -75,8 +77,7 @@ export default {
   text-align: center;
 
   .title {
-    font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
-      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: 'Kosugi Maru', sans-serif;
     display: block;
     font-weight: 300;
     font-size: 40px;
@@ -86,6 +87,31 @@ export default {
 
   .logo-box {
     width: 100%;
+  }
+
+  .submit-btn {
+    font-family: 'Kosugi Maru', sans-serif;
+    padding: 20px;
+    font-size: 18px;
+    border-radius: 5px;
+    border: none;
+    color: #222f3e;
+    background-color: #f5f5f5;
+    &.stay {
+      color: #222f3e;
+      background-color: #48dbfb;
+    }
+  }
+}
+
+@media screen and (max-width: 559px) {
+  .container {
+    .title {
+      font-weight: 300;
+      font-size: 24px;
+      color: #35495e;
+      letter-spacing: 1px;
+    }
   }
 }
 </style>
