@@ -1,31 +1,12 @@
 <template>
   <div class="container">
-    <div>
+    <h1 @click="submit()" class="title">
+      さとにゃん おさんぽ かんし つ～る
+    </h1>
+    <div class="logo-box">
       <logo />
-      <h1 @click="submit()" class="title">
-        leave-counter
-      </h1>
-      <h2 class="subtitle">
-        My beautiful Nuxt.js project
-      </h2>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey"
-        >
-          GitHub
-        </a>
-      </div>
     </div>
-    <button @click="submit()">
+    <button @click="submit()" :class="{ stay: flag }" class="submit-btn">
       {{ btnTxt }}
     </button>
   </div>
@@ -41,7 +22,8 @@ export default {
   },
   data () {
     return {
-      btnTxt: 'いなくなった！'
+      btnTxt: 'いなくなった！',
+      flag: false
     }
   },
   mounted () {
@@ -52,8 +34,10 @@ export default {
       if (doc.exists) {
         if (doc.data().state === true) {
           this.btnTxt = 'せきにいるよ'
+          this.flag = true
         } else {
           this.btnTxt = 'いなくなった！'
+          this.flag = false
         }
       } else {
         console.log('error')
@@ -74,11 +58,13 @@ export default {
               state: false
             })
             this.btnTxt = 'いなくなった！'
+            this.flag = false
           } else {
             status.set({
               state: true
             })
             this.btnTxt = 'せきにいるよ'
+            this.flag = true
           }
         } else {
           console.log('error')
@@ -91,35 +77,28 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .container {
   margin: 0 auto;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
   text-align: center;
-}
 
-.title {
-  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
+  .title {
+    font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    display: block;
+    font-weight: 300;
+    font-size: 40px;
+    color: #35495e;
+    letter-spacing: 1px;
+  }
 
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
+  .logo-box {
+    width: 100%;
+  }
 }
 </style>
