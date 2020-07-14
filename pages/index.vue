@@ -2,7 +2,7 @@
   <div class="container">
     <div>
       <logo />
-      <h1 class="title">
+      <h1 @click="submit()" class="title">
         leave-counter
       </h1>
       <h2 class="subtitle">
@@ -25,15 +25,68 @@
         </a>
       </div>
     </div>
+    <button @click="submit()">
+      {{ btnTxt }}
+    </button>
   </div>
 </template>
 
 <script>
 import Logo from '~/components/Logo.vue'
+import firebase from '~/plugins/firebase'
 
 export default {
   components: {
     Logo
+  },
+  data () {
+    return {
+      btnTxt: 'いなくなった！'
+    }
+  },
+  mounted () {
+    const db = firebase.firestore()
+    const status = db.collection('leave-time').doc('IZkrWRg1loXHz6gKHX8E')
+
+    status.get().then((doc) => {
+      if (doc.exists) {
+        if (doc.data().state === true) {
+          this.btnTxt = 'せきにいるよ'
+        } else {
+          this.btnTxt = 'いなくなった！'
+        }
+      } else {
+        console.log('error')
+      }
+    }).catch((error) => {
+      console.log('api error :' + error)
+    })
+  },
+  methods: {
+    submit () {
+      const db = firebase.firestore()
+      const status = db.collection('leave-time').doc('IZkrWRg1loXHz6gKHX8E')
+
+      status.get().then((doc) => {
+        if (doc.exists) {
+          if (doc.data().state === true) {
+            status.set({
+              state: false
+            })
+            this.btnTxt = 'いなくなった！'
+          } else {
+            status.set({
+              state: true
+            })
+            this.btnTxt = 'せきにいるよ'
+          }
+        } else {
+          console.log('error')
+        }
+      }).catch((error) => {
+        console.log('api error :' + error)
+      })
+    }
   }
 }
 </script>
@@ -49,8 +102,8 @@ export default {
 }
 
 .title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   display: block;
   font-weight: 300;
   font-size: 100px;
