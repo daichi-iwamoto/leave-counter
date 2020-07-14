@@ -87,6 +87,7 @@ export default {
 
   .logo-box {
     width: 100%;
+    text-align: center;
   }
 
   .submit-btn {
