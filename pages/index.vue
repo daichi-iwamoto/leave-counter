@@ -55,11 +55,11 @@ export default {
       const status = db.collection('leave-time').doc('IZkrWRg1loXHz6gKHX8E')
 
       if (this.flag.state === true) {
-        status.set({
+        status.update({
           state: false
         })
       } else {
-        status.set({
+        status.update({
           state: true
         })
       }
