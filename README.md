@@ -1,12 +1,37 @@
 # leave-counter
 
-> My beautiful Nuxt.js project
+> 特定保護生物、さとにゃんの在席状況をチェックしましょう！
+
+## summary
+「さとにゃんが今、席にいるかわからない… 」
+このWebアプリを使用すれば、そんな悩みから解放されます！
+
+このアプリでは、さとにゃんのイラストが表示されているときは
+「さとにゃんが在席している。」
+さとにゃんのイラストが表示されていない時は
+「さとにゃんが離席している。」
+という風に確認する事ができます！
+
+さとにゃんのが席にいないと気付いた人が、このアプリで
+「いなくなった！」と報告することで、在席情報が更新されます！
+
+スマホにも対応しているので、外でさとにゃんを発見した方でも
+簡単に報告が可能です！
+
+さとにゃんが自席に戻った際には、さとにゃん自身、もしくは
+戻ったことを確認した人が「せきにいるよ」と報告することで
+在席情報が更新されます！
+
+このWebアプリで素晴らしい、さとにゃんライフを送りましょう！
+
+## comming soon
+さとにゃんの１日の離席時間を計算できるようにする予定です。
 
 ## Build Setup
 
 ``` bash
 # install dependencies
-$ npm run install
+$ npm install
 
 # serve with hot reload at localhost:3000
 $ npm run dev
@@ -19,4 +44,9 @@ $ npm run start
 $ npm run generate
 ```
 
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+## Using Plugins
+### firebase
+Hosting, Firestore を使用しています。
+
+## vuefire
+VueでFirestoreを使用する為に使用しています。
