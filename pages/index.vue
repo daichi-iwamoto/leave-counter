@@ -3,8 +3,12 @@
     <h1 @click="submit()" class="title">
       さとにゃん かんし つ～る
     </h1>
+    <div :class="{ stay: flag.state }" class="description">
+      <p class="stay-now">さとにゃんは おしごとちゅう（？） のようです</p>
+      <p class="leave-now">おやおや？ さとにゃんは <span>おさんぽちゅう</span> のようです</p>
+    </div>
     <div class="logo-box">
-      <logo />
+      <Logo :class="{ stay: flag.state }" />
     </div>
     <button @click="submit()" :class="{ stay: flag.state }" class="submit-btn">
       {{ btnTxt }}
@@ -72,7 +76,7 @@ export default {
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-content: flex-start;
   flex-wrap: wrap;
   text-align: center;
 
@@ -83,11 +87,45 @@ export default {
     font-size: 40px;
     color: #35495e;
     letter-spacing: 1px;
+    width: 100%;
+    padding: 30px 0;
+  }
+
+  .description {
+    width: 100%;
+    padding: 10px 0;
+    font-family: 'Kosugi Maru', sans-serif;
+
+    span {
+      color: #ff4757;
+    }
+
+    .stay-now, .leave-now {
+      font-size: 14px;
+    }
+
+    .stay-now {
+      display: block;
+    }
+    .leave-now {
+      display: none;
+    }
+
+    &.stay {
+      .stay-now {
+        display: none;
+      }
+      .leave-now {
+        display: block;
+      }
+    }
   }
 
   .logo-box {
     width: 100%;
+    height: 500px;
     text-align: center;
+    position: relative;
   }
 
   .submit-btn {
@@ -96,8 +134,8 @@ export default {
     font-size: 18px;
     border-radius: 5px;
     border: none;
-    color: #222f3e;
-    background-color: #f5f5f5;
+    color: #f5f5f5;
+    background-color: #ff4757;
     &.stay {
       color: #222f3e;
       background-color: #48dbfb;
