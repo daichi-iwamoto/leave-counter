@@ -48,5 +48,5 @@ $ npm run generate
 ### firebase
 Hosting, Firestore を使用しています。
 
-## vuefire
+### vuefire
 VueでFirestoreを使用する為に使用しています。
