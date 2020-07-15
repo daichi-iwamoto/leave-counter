@@ -3,20 +3,21 @@
     <h1 @click="submit()" class="title">
       さとにゃん かんし つ～る
     </h1>
-    <div :class="{ stay: flag.state }" class="description">
+    <div :class="{ stay: store_value.state }" class="description">
       <p class="stay-now">さとにゃんは おしごとちゅう（？） のようです</p>
       <p class="leave-now">おやおや？ さとにゃんは <span>おさんぽちゅう</span> のようです</p>
     </div>
     <div class="logo-box">
-      <Logo :class="{ stay: flag.state }" />
+      <Logo :class="{ stay: store_value.state }" />
     </div>
-    <button @click="submit()" :class="{ stay: flag.state }" class="submit-btn">
+    <button @click="submit()" :class="{ stay: store_value.state }" class="submit-btn">
       {{ btnTxt }}
     </button>
   </div>
 </template>
 
 <script>
+import WrapRDB from '../plugins/modules/rdb_librarys/WrapRDB'
 import Logo from '~/components/Logo.vue'
 import firebase from '~/plugins/firebase'
 
@@ -27,23 +28,23 @@ export default {
   data () {
     return {
       btnTxt: 'いなくなった！',
-      flag: {}
+      store_value: {}
     }
   },
   firestore () {
     return {
-      flag: firebase.firestore().collection('leave-time').doc('IZkrWRg1loXHz6gKHX8E')
+      store_value: firebase.firestore().collection('leave-time').doc('IZkrWRg1loXHz6gKHX8E')
     }
   },
   mounted () {
-    if (this.flag.state === true) {
+    if (this.store_value.state === true) {
       this.btnTxt = 'せきにいるよ'
     } else {
       this.btnTxt = 'いなくなった！'
     }
   },
   beforeUpdate () {
-    if (this.flag.state === true) {
+    if (this.store_value.state === true) {
       this.btnTxt = 'せきにいるよ'
     } else {
       this.btnTxt = 'いなくなった！'
@@ -51,17 +52,35 @@ export default {
   },
   methods: {
     submit () {
-      const db = firebase.firestore()
-      const status = db.collection('leave-time').doc('IZkrWRg1loXHz6gKHX8E')
+      // const db = firebase.firestore()
+      // const status = db.collection('leave-time').doc('IZkrWRg1loXHz6gKHX8E')
 
-      if (this.flag.state === true) {
-        status.update({
-          state: false
-        })
+      console.log(this.store_value.total_leave_time)
+
+      if (this.store_value.state === true) {
+        WrapRDB.update(
+          {
+            leave_time: new Date().toLocaleString(),
+            state: false
+          }
+        )
       } else {
-        status.update({
-          state: true
-        })
+        const duration = new Date(new Date().toLocaleString()) - new Date(this.store_value.leave_time)
+        const hour = Math.floor(duration / 3600000)
+        const minute = Math.floor((duration - 3600000 * hour) / 60000)
+
+        const hh = ('00' + hour).slice(-2)
+        const mm = ('00' + minute).slice(-2)
+        const ms = ('00000' + (duration % 60000)).slice(-5)
+
+        const time = `${hh}:${mm}:${ms.slice(0, 2)},${ms.slice(2, 5)}`
+        WrapRDB.update(
+          {
+            return_time: new Date().toLocaleString(),
+            state: true,
+            total_leave_time: time.toString()
+          }
+        )
       }
     }
   }

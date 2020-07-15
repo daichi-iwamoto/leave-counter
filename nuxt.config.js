@@ -28,7 +28,8 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '~/plugins/vuefire'
+    '~/plugins/vuefire',
+    '~/plugins/modules/rdb_librarys/WrapRDB'
   ],
   /*
   ** Nuxt.js dev-modules
