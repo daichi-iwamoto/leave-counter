@@ -3,20 +3,22 @@
     <h1 @click="submit()" class="title">
       さとにゃん かんし つ～る
     </h1>
-    <div :class="{ stay: flag.state }" class="description">
+    <div :class="{ stay: store_value.state }" class="description">
       <p class="stay-now">さとにゃんは おしごとちゅう（？） のようです</p>
       <p class="leave-now">おやおや？ さとにゃんは <span>おさんぽちゅう</span> のようです</p>
     </div>
     <div class="logo-box">
-      <Logo :class="{ stay: flag.state }" />
+      <Logo :class="{ stay: store_value.state }" />
     </div>
-    <button @click="submit()" :class="{ stay: flag.state }" class="submit-btn">
+    <button @click="submit()" :class="{ stay: store_value.state }" class="submit-btn">
       {{ btnTxt }}
     </button>
   </div>
 </template>
 
 <script>
+import WrapRDB from '../plugins/modules/rdb_librarys/WrapRDB'
+import RealTime from '../plugins/modules/newRealTime/RealTime'
 import Logo from '~/components/Logo.vue'
 import firebase from '~/plugins/firebase'
 
@@ -27,23 +29,23 @@ export default {
   data () {
     return {
       btnTxt: 'いなくなった！',
-      flag: {}
+      store_value: {}
     }
   },
   firestore () {
     return {
-      flag: firebase.firestore().collection('leave-time').doc('IZkrWRg1loXHz6gKHX8E')
+      store_value: firebase.firestore().collection('leave-time').doc('IZkrWRg1loXHz6gKHX8E')
     }
   },
   mounted () {
-    if (this.flag.state === true) {
+    if (this.store_value.state === true) {
       this.btnTxt = 'せきにいるよ'
     } else {
       this.btnTxt = 'いなくなった！'
     }
   },
   beforeUpdate () {
-    if (this.flag.state === true) {
+    if (this.store_value.state === true) {
       this.btnTxt = 'せきにいるよ'
     } else {
       this.btnTxt = 'いなくなった！'
@@ -51,17 +53,21 @@ export default {
   },
   methods: {
     submit () {
-      const db = firebase.firestore()
-      const status = db.collection('leave-time').doc('IZkrWRg1loXHz6gKHX8E')
-
-      if (this.flag.state === true) {
-        status.update({
-          state: false
-        })
+      if (this.store_value.state === true) {
+        WrapRDB.update(
+          {
+            leave_time: new Date().toLocaleString(),
+            state: false
+          }
+        )
       } else {
-        status.update({
-          state: true
-        })
+        RealTime.setTimeStamp(this.store_value.create_timestamp)
+        WrapRDB.update(
+          {
+            return_time: new Date().toLocaleString(),
+            state: true
+          }
+        )
       }
     }
   }
