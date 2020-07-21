@@ -18,6 +18,7 @@
 
 <script>
 import WrapRDB from '../plugins/modules/rdb_librarys/WrapRDB'
+import RealTime from '../plugins/modules/newRealTime/RealTime'
 import Logo from '~/components/Logo.vue'
 import firebase from '~/plugins/firebase'
 
@@ -52,11 +53,6 @@ export default {
   },
   methods: {
     submit () {
-      // const db = firebase.firestore()
-      // const status = db.collection('leave-time').doc('IZkrWRg1loXHz6gKHX8E')
-
-      console.log(this.store_value.total_leave_time)
-
       if (this.store_value.state === true) {
         WrapRDB.update(
           {
@@ -65,20 +61,11 @@ export default {
           }
         )
       } else {
-        const duration = new Date(new Date().toLocaleString()) - new Date(this.store_value.leave_time)
-        const hour = Math.floor(duration / 3600000)
-        const minute = Math.floor((duration - 3600000 * hour) / 60000)
-
-        const hh = ('00' + hour).slice(-2)
-        const mm = ('00' + minute).slice(-2)
-        const ms = ('00000' + (duration % 60000)).slice(-5)
-
-        const time = `${hh}:${mm}:${ms.slice(0, 2)},${ms.slice(2, 5)}`
+        RealTime.setTimeStamp(this.store_value.create_timestamp)
         WrapRDB.update(
           {
             return_time: new Date().toLocaleString(),
-            state: true,
-            total_leave_time: time.toString()
+            state: true
           }
         )
       }

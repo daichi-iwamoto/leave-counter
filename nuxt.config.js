@@ -29,7 +29,8 @@ export default {
   */
   plugins: [
     '~/plugins/vuefire',
-    '~/plugins/modules/rdb_librarys/WrapRDB'
+    '~/plugins/modules/rdb_librarys/WrapRDB',
+    '~/plugins/modules/newRealTime/RealTime'
   ],
   /*
   ** Nuxt.js dev-modules

@@ -10,6 +10,6 @@ export default {
     ins.Update(payload)
   },
   fetch () {
-    return true
+    return new RealTimeDatabase()
   }
 }
