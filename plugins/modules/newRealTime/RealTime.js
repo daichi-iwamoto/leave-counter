@@ -12,8 +12,7 @@ export default {
       )
       return true
     } else {
-      console.log(dbLeaveTimeCollection)
-      this.realTimeUpdate(true, dbLeaveTimeCollection)
+      this.realTimeUpdate(false, dbLeaveTimeCollection)
       return false
     }
   },
@@ -23,7 +22,7 @@ export default {
    */
   realTimeUpdate (updateFlag, dbLeaveTime) {
     const leaveTime = this.rtnLeave(dbLeaveTime)
-    const time = `${leaveTime.hour}:${leaveTime.min}:${leaveTime.micro.slice(0, 2)}`
+    const time = `${leaveTime.hour}:${leaveTime.min}:${leaveTime.micro}`
     if (updateFlag) {
       WrapRDB.update(
         {
@@ -47,6 +46,7 @@ export default {
     const hh = ('00' + hour).slice(-2)
     const mm = ('00' + minute).slice(-2)
     const ms = ('00000' + (duration % 60000)).slice(-5).slice(0, 2)
+
     return {
       hour: hh,
       min: mm,
@@ -58,7 +58,8 @@ export default {
    * @param dbLeaveTime 現在のトータル時間のコレクションオブジェクト(String)
    */
   plusLeave (plusLeaveTime, dbLeaveTime) {
-    const plusTime = new Date(plusLeaveTime.total_leave_time) + new Date(dbLeaveTime)
+    const plusTime = new Date(plusLeaveTime) + new Date(dbLeaveTime.total_leave_time)
+    console.log(dbLeaveTime)
     const durationS = new Date(plusTime)
     const hourS = Math.floor(durationS / 3600000)
     const minuteS = Math.floor((durationS - 3600000 * hourS) / 60000)

@@ -64,7 +64,7 @@ export default {
   methods: {
     submit () {
       if (this.store_value.state === true) {
-        RealTime.setTimeStamp(this.store_value.create_timestamp, this.store_value.total_leave_time)
+        RealTime.setTimeStamp(this.store_value.create_timestamp, this.store_value.leave_time)
         WrapRDB.update(
           {
             return_time: new Date().toLocaleString(),
