@@ -1,7 +1,7 @@
 import WrapRDB from '~/plugins/modules/rdb_librarys/WrapRDB'
 
 export default {
-  setTimeStamp (dbTimeStamp) {
+  setTimeStamp (dbTimeStamp, dbLeaveTimeCollection) {
     const dbDay = new Date(dbTimeStamp)
     const todayDay = new Date(new Date().toLocaleString())
     if (dbDay.getDay() !== todayDay.getDay()) {
@@ -12,7 +12,8 @@ export default {
       )
       return true
     } else {
-      this.realTimeUpdate(true, dbTimeStamp)
+      console.log(dbLeaveTimeCollection)
+      this.realTimeUpdate(true, dbLeaveTimeCollection)
       return false
     }
   },
@@ -22,7 +23,7 @@ export default {
    */
   realTimeUpdate (updateFlag, dbLeaveTime) {
     const leaveTime = this.rtnLeave(dbLeaveTime)
-    const time = `${leaveTime.hour}:${leaveTime.min}:${leaveTime.micro.slice(0, 2)},${leaveTime.micro.slice(2, 5)}`
+    const time = `${leaveTime.hour}:${leaveTime.min}:${leaveTime.micro.slice(0, 2)}`
     if (updateFlag) {
       WrapRDB.update(
         {
@@ -33,7 +34,7 @@ export default {
       const plusUpdate = this.plusLeave(time, WrapRDB.fetch())
       WrapRDB.update(
         {
-          'total_leave_time': `${plusUpdate.hour}:${plusUpdate.min}:${plusUpdate.micro.slice(0, 2)},${plusUpdate.micro.slice(2, 5)}`
+          'total_leave_time': `${plusUpdate.hour}:${plusUpdate.min}:${plusUpdate.micro.slice(0, 2)}`
         }
       )
     }
@@ -45,7 +46,7 @@ export default {
 
     const hh = ('00' + hour).slice(-2)
     const mm = ('00' + minute).slice(-2)
-    const ms = ('00000' + (duration % 60000)).slice(-5)
+    const ms = ('00000' + (duration % 60000)).slice(-5).slice(0, 2)
     return {
       hour: hh,
       min: mm,
@@ -64,7 +65,7 @@ export default {
 
     const hh = ('00' + hourS).slice(-2)
     const mm = ('00' + minuteS).slice(-2)
-    const ms = ('00000' + (durationS % 60000)).slice(-5)
+    const ms = ('00000' + (durationS % 60000)).slice(-5).slice(0, 2)
     return {
       hour: hh,
       min: mm,
