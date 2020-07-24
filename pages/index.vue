@@ -63,22 +63,26 @@ export default {
   },
   methods: {
     submit () {
+      const TimeValue = new Date().toLocaleString()
+      const diff = RealTime.init(this.store_value, TimeValue)
       if (this.store_value.state === true) {
         RealTime.setTimeStamp(this.store_value.create_timestamp, this.store_value.leave_time)
         WrapRDB.update(
           {
-            return_time: new Date().toLocaleString(),
+            leave_time: TimeValue,
             state: false
           }
         )
       } else {
         WrapRDB.update(
           {
-            leave_time: new Date().toLocaleString(),
+            total_leave_time: diff,
+            return_time: TimeValue,
             state: true
           }
         )
       }
+      console.log('Total Leave Time :' + (this.store_value.total_leave_time))
     }
   }
 }
