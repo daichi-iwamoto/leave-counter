@@ -1,74 +1,51 @@
+import moment from 'moment'
 import WrapRDB from '~/plugins/modules/rdb_librarys/WrapRDB'
 
 export default {
-  setTimeStamp (dbTimeStamp) {
-    const dbDay = new Date(dbTimeStamp)
-    const todayDay = new Date(new Date().toLocaleString())
-    if (dbDay.getDay() !== todayDay.getDay()) {
-      WrapRDB.update(
-        {
-          'create_timestamp': todayDay.toLocaleString()
-        }
-      )
+  init (storeValue, returnTime) {
+    const leave = storeValue.leave_time
+    const rtrnTime = returnTime
+
+    let diff = moment().diff(leave, rtrnTime)
+
+    diff = this.converter(diff)
+
+    let total = storeValue.total_leave_time /* 今日の差分 */
+    total = new Date(total.toString().includes('NaN') < 0 ? '2020/01/01 0:0:0' : '2020/01/01 ' + total)
+    try {
+      this.err = new Date('2020/01/01 ' + storeValue.total_leave_time)
+    } catch (e) {
+      /* 書式的エラーの時 */
+      WrapRDB.update({
+        total_leave_time: '0:0:0'
+      })
+      total = new Date('2020/01/01 0:0:0')
+    }
+    if (new Date().getDay() !== new Date(storeValue.create_timestamp).getDay()) {
+      WrapRDB.update({
+        total_leave_time: this.converter(diff),
+        create_timestamp: new Date().toLocaleString(),
+        state: true
+      })
       return true
-    } else {
-      this.realTimeUpdate(true, dbTimeStamp)
-      return false
     }
+    diff = '2020/01/01 ' + diff
+    const pls = this.converter((total.getTime() + new Date(diff).getTime()))
+    // console.log(pls)
+    return pls
   },
-  /***
-   * @param updateFlag
-   * @param dbLeaveTime 佐藤さんが離席したタイミング
-   */
-  realTimeUpdate (updateFlag, dbLeaveTime) {
-    const leaveTime = this.rtnLeave(dbLeaveTime)
-    const time = `${leaveTime.hour}:${leaveTime.min}:${leaveTime.micro.slice(0, 2)},${leaveTime.micro.slice(2, 5)}`
-    if (updateFlag) {
-      WrapRDB.update(
-        {
-          'total_leave_time': time
-        }
-      )
-    } else {
-      const plusUpdate = this.plusLeave(time, WrapRDB.fetch())
-      WrapRDB.update(
-        {
-          'total_leave_time': `${plusUpdate.hour}:${plusUpdate.min}:${plusUpdate.micro.slice(0, 2)},${plusUpdate.micro.slice(2, 5)}`
-        }
-      )
-    }
-  },
-  rtnLeave (dbLeave) {
-    const duration = new Date(new Date().toLocaleString()) - new Date(dbLeave)
-    const hour = Math.floor(duration / 3600000)
-    const minute = Math.floor((duration - 3600000 * hour) / 60000)
+  converter (diffTime) {
+    const t = diffTime
+    const s = parseInt(t / 1000)
+    const sM = s % 60
+    const m = parseInt(t / 60)
+    const mM = m % 60
+    const h = parseInt(t / 60 / 60)
 
-    const hh = ('00' + hour).slice(-2)
-    const mm = ('00' + minute).slice(-2)
-    const ms = ('00000' + (duration % 60000)).slice(-5)
-    return {
-      hour: hh,
-      min: mm,
-      micro: ms
-    }
+    return this.zero(h) + ':' + this.zero(mM) + ':' + this.zero(sM)
   },
-  /***
-   * @param plusLeaveTime 足す値(Collection => String)
-   * @param dbLeaveTime 現在のトータル時間のコレクションオブジェクト(String)
-   */
-  plusLeave (plusLeaveTime, dbLeaveTime) {
-    const plusTime = new Date(plusLeaveTime.total_leave_time) + new Date(dbLeaveTime)
-    const durationS = new Date(plusTime)
-    const hourS = Math.floor(durationS / 3600000)
-    const minuteS = Math.floor((durationS - 3600000 * hourS) / 60000)
-
-    const hh = ('00' + hourS).slice(-2)
-    const mm = ('00' + minuteS).slice(-2)
-    const ms = ('00000' + (durationS % 60000)).slice(-5)
-    return {
-      hour: hh,
-      min: mm,
-      micro: ms
-    }
+  zero (num) {
+    num = num.toString()
+    return num.length === 2 ? num : '0' + num.toString()
   }
 }
