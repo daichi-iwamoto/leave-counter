@@ -41,7 +41,6 @@ export default {
     const m = parseInt(t / 60)
     const mM = m % 60
     const h = parseInt(t / 60 / 60)
-
     return this.zero(h) + ':' + this.zero(mM) + ':' + this.zero(sM)
   },
   zero (num) {

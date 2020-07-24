@@ -10,6 +10,10 @@
     <div class="logo-box">
       <Logo :class="{ stay: store_value.state }" />
     </div>
+    <p class="leave-time">
+      ほんじつ の りせき ごうけいじかん は...<br>
+      <span>{{leave_hour}}</span>じかん <span>{{leave_min}}</span>ふん <span>{{leave_sec}}</span>びょ～！
+    </p>
     <button @click="submit()" :class="{ stay: store_value.state }" class="submit-btn">
       {{ btnTxt }}
     </button>
@@ -29,6 +33,9 @@ export default {
   data () {
     return {
       btnTxt: 'いなくなった！',
+      leave_hour: '',
+      leave_min: '',
+      leave_sec: '',
       store_value: {}
     }
   },
@@ -50,12 +57,16 @@ export default {
     } else {
       this.btnTxt = 'いなくなった！'
     }
+    this.leave_hour = Number(this.store_value.total_leave_time.slice(0, 2))
+    this.leave_min = Number(this.store_value.total_leave_time.slice(3, 5))
+    this.leave_sec = Number(this.store_value.total_leave_time.slice(-2))
   },
   methods: {
     submit () {
       const TimeValue = new Date().toLocaleString()
       const diff = RealTime.init(this.store_value, TimeValue)
       if (this.store_value.state === true) {
+        RealTime.setTimeStamp(this.store_value.create_timestamp, this.store_value.leave_time)
         WrapRDB.update(
           {
             leave_time: TimeValue,
@@ -135,6 +146,19 @@ export default {
     height: 500px;
     text-align: center;
     position: relative;
+  }
+
+  .leave-time {
+    font-family: 'Kosugi Maru', sans-serif;
+    width: 100%;
+    line-height: 38px;
+    padding: 15px;
+    letter-spacing: 1px;
+    span {
+      font-size: 42px;
+      font-weight: bold;
+      color: #ff4757;
+    }
   }
 
   .submit-btn {
