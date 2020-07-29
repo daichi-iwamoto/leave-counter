@@ -3,20 +3,21 @@
     <h1 @click="submit()" class="title">
       さとにゃん かんし つ～る
     </h1>
-    <div :class="{ stay: flag.state }" class="description">
+    <div :class="{ stay: firestore.state }" class="description">
       <p class="stay-now">さとにゃんは おしごとちゅう（？） のようです</p>
       <p class="leave-now">おやおや？ さとにゃんは <span>おさんぽちゅう</span> のようです</p>
     </div>
     <div class="logo-box">
-      <Logo :class="{ stay: flag.state }" />
+      <Logo :class="{ stay: firestore.state }" />
     </div>
-    <button @click="submit()" :class="{ stay: flag.state }" class="submit-btn">
+    <button @click="submit()" :class="{ stay: firestore.state }" class="submit-btn">
       {{ btnTxt }}
     </button>
   </div>
 </template>
 
 <script>
+import moment from 'moment'
 import Logo from '~/components/Logo.vue'
 import firebase from '~/plugins/firebase'
 
@@ -27,23 +28,23 @@ export default {
   data () {
     return {
       btnTxt: 'いなくなった！',
-      flag: {}
+      firestore: {}
     }
   },
   firestore () {
     return {
-      flag: firebase.firestore().collection('leave-time').doc('IZkrWRg1loXHz6gKHX8E')
+      firestore: firebase.firestore().collection('leave-time').doc('IZkrWRg1loXHz6gKHX8E')
     }
   },
   mounted () {
-    if (this.flag.state === true) {
+    if (this.firestore.state === true) {
       this.btnTxt = 'せきにいるよ'
     } else {
       this.btnTxt = 'いなくなった！'
     }
   },
   beforeUpdate () {
-    if (this.flag.state === true) {
+    if (this.firestore.state === true) {
       this.btnTxt = 'せきにいるよ'
     } else {
       this.btnTxt = 'いなくなった！'
@@ -54,13 +55,26 @@ export default {
       const db = firebase.firestore()
       const status = db.collection('leave-time').doc('IZkrWRg1loXHz6gKHX8E')
 
-      if (this.flag.state === true) {
+      const nowDate = moment(new Date())
+      const now = nowDate.format('YYYY/MM/DD HH:mm:ss')
+
+      console.log(now)
+
+      if (this.firestore.state === true) {
+        const leave = moment(this.firestore.leave_time).format('YYYY/MM/DD HH:mm:ss')
+        const hdiff = nowDate.diff(leave, 'h')
+        const mdiff = nowDate.diff(leave, 'm')
+        const sdiff = nowDate.diff(leave, 's')
+        console.log(hdiff + ':' + (mdiff - (hdiff * 60)) + ':' + (sdiff - (mdiff * 60)))
+
         status.update({
-          state: false
+          state: false,
+          return_time: now
         })
       } else {
         status.update({
-          state: true
+          state: true,
+          leave_time: now
         })
       }
     }
