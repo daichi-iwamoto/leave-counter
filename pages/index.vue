@@ -10,6 +10,10 @@
     <div class="logo-box">
       <Logo :class="{ stay: firestore.state }" />
     </div>
+    <p class="leave-time">
+        ほんじつ の りせき ごうけいじかん は…<br>
+        <span>{{leave_hour}}</span>じかん <span>{{leave_min}}</span>ふん <span>{{leave_sec}}</span>びょ～！
+    </p>
     <button @click="submit()" :class="{ stay: firestore.state }" class="submit-btn">
       {{ btnTxt }}
     </button>
@@ -28,6 +32,9 @@ export default {
   data () {
     return {
       btnTxt: 'いなくなった！',
+      leave_hour: '',
+      leave_min: '',
+      leave_sec: '',
       firestore: {}
     }
   },
@@ -49,6 +56,9 @@ export default {
     } else {
       this.btnTxt = 'いなくなった！'
     }
+    this.leave_hour = Number(this.firestore.total_leave_time.substr(11, 2))
+    this.leave_min = Number(this.firestore.total_leave_time.substr(14, 2))
+    this.leave_sec = Number(this.firestore.total_leave_time.substr(17, 2))
   },
   methods: {
     submit () {
@@ -57,25 +67,46 @@ export default {
 
       const nowDate = moment(new Date())
       const now = nowDate.format('YYYY/MM/DD HH:mm:ss')
-
-      console.log(now)
+      const nowDay = nowDate.format('YYYY/MM/DD')
 
       if (this.firestore.state === true) {
+        const leaveDay = moment(this.firestore.leave_time).format('YYYY/MM/DD')
         const leave = moment(this.firestore.leave_time).format('YYYY/MM/DD HH:mm:ss')
-        const hdiff = nowDate.diff(leave, 'h')
-        const mdiff = nowDate.diff(leave, 'm')
-        const sdiff = nowDate.diff(leave, 's')
-        console.log(hdiff + ':' + (mdiff - (hdiff * 60)) + ':' + (sdiff - (mdiff * 60)))
 
-        status.update({
-          state: false,
-          return_time: now
-        })
+        const hdiff = nowDate.diff(leave, 'h')
+        const mdiff = nowDate.diff(leave, 'm') - (hdiff * 60)
+        const sdiff = nowDate.diff(leave, 's') - (mdiff * 60)
+
+        if (leaveDay === nowDay) {
+          const total = moment(this.firestore.total_leave_time).add({ hour: hdiff, minute: mdiff, second: sdiff })
+          console.log(total.format('HH:mm:ss'))
+          status.update({
+            state: false,
+            return_time: now,
+            total_leave_time: '2020/01/01 ' + total.format('HH:mm:ss')
+          })
+        } else {
+          status.update({
+            state: false,
+            return_time: now,
+            total_leave_time: '2020/01/01 0:0:0'
+          })
+        }
       } else {
-        status.update({
-          state: true,
-          leave_time: now
-        })
+        const returnDay = moment(this.firestore.return_time).format('YYYY/MM/DD')
+
+        if (returnDay === nowDay) {
+          status.update({
+            state: true,
+            leave_time: now
+          })
+        } else {
+          status.update({
+            state: true,
+            leave_time: now,
+            total_leave_time: '2020/01/01 0:0:0'
+          })
+        }
       }
     }
   }
@@ -142,6 +173,19 @@ export default {
     position: relative;
   }
 
+  .leave-time {
+    font-family: 'Kosugi Maru', sans-serif;
+    width: 100%;
+    line-height: 38px;
+    padding: 15px;
+    letter-spacing: 1px;
+    span {
+      font-size: 42px;
+      font-weight: bold;
+      color: #ff4757;
+    }
+  }
+
   .submit-btn {
     font-family: 'Kosugi Maru', sans-serif;
     padding: 20px;
@@ -164,6 +208,9 @@ export default {
       font-size: 24px;
       color: #35495e;
       letter-spacing: 1px;
+    }
+    .logo-box {
+      height: 280px;
     }
   }
 }
