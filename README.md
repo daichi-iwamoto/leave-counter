@@ -1,4 +1,5 @@
 # leave-counter
+https://leave-counter-236ec.web.app/
 
 > 特定保護生物、さとにゃんの在席状況をチェックしましょう！
 
